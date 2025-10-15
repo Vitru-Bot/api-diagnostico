@@ -39,7 +39,7 @@ const diagnosticos = {
 
 // Cria a rota POST para /api/diagnostico
 // O Hono usa um objeto de contexto 'c'
-app.post('/api/diagnostico', async (c) => {
+app.post('/diagnostico', async (c) => {
     // Pega o corpo da requisição (JSON) de forma assíncrona
     const { respostas } = await c.req.json();
 
