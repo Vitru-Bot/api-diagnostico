@@ -35,17 +35,11 @@ const diagnosticos = {
     "Consolidado": { letra: "C", titulo: "Consolidado – O Fantasma da Estagnação" },
     "Visionário": { letra: "D", titulo: "Visionário – O Fantasma da Ilusão" }
 };
-// --- FIM DA BASE DE CONHECIMENTO ---
 
-// Cria a rota POST para /api/diagnostico
-// O Hono usa um objeto de contexto 'c'
 app.post('/diagnostico', async (c) => {
-    // Pega o corpo da requisição (JSON) de forma assíncrona
     const { respostas } = await c.req.json();
 
-    // Validação
     if (!respostas || !Array.isArray(respostas) || respostas.length === 0) {
-        // Retorna um JSON de erro
         return c.json({ error: 'O campo "respostas" é obrigatório e deve ser um array de strings.' }, 400);
     }
 
@@ -68,7 +62,6 @@ app.post('/diagnostico', async (c) => {
 
     const diagnosticoFinal = diagnosticos[perfilFinal];
 
-    // Retorna o JSON de sucesso
     return c.json({
         diagnosticoFinal: diagnosticoFinal.letra,
         perfil: diagnosticoFinal.titulo,
@@ -76,5 +69,4 @@ app.post('/diagnostico', async (c) => {
     });
 });
 
-// Exporta o manipulador do Hono para a Cloudflare (muito mais simples!)
 export const onRequest = app.fetch;
