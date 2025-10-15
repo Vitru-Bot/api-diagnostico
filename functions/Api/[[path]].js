@@ -82,3 +82,5 @@ app.use('/api', router);
 
 // Exporte o handler para a Cloudflare
 export const onRequest = serverless(app);
+
+//teste
