@@ -1,4 +1,4 @@
-// --- BASE DE CONHECIMENTO (A mesma de antes) ---
+// --- BASE DE CONHECIMENTO (Use esta que está fora da função) ---
 const respostasParaPerfil = {
     "O medo de dar errado antes mesmo de começar": "Iniciante",
     "Ainda é tudo na base do improviso e da intuição": "Iniciante",
@@ -29,55 +29,45 @@ const diagnosticos = {
     "Visionário": { letra: "D", titulo: "Visionário – O Fantasma da Ilusão" }
 };
 
+// A função onRequestPost lida apenas com requisições do tipo POST
 export const onRequestPost = async ({ request }) => {
-  const { respostas } = await request.json();
+    const { respostas } = await request.json();
 
-  if (!respostas || !Array.isArray(respostas) || respostas.length === 0) {
-    return new Response(
-      JSON.stringify({
-        error: 'O campo "respostas" é obrigatório e deve ser um array de strings.',
-      }),
-      { status: 400, headers: { "Content-Type": "application/json" } }
-    );
-  }
-
-  const respostasParaPerfil = {
-    "Sim": "Iniciante",
-    "Não": "Visionário",
-  };
-
-  const diagnosticos = {
-    "Iniciante": { letra: "A", titulo: "Iniciante" },
-    "Em Crescimento": { letra: "B", titulo: "Em Crescimento" },
-    "Consolidado": { letra: "C", titulo: "Consolidado" },
-    "Visionário": { letra: "D", titulo: "Visionário" },
-  };
-
-  const contagem = { "Iniciante": 0, "Em Crescimento": 0, "Consolidado": 0, "Visionário": 0 };
-
-  for (const resposta of respostas) {
-    const perfil = respostasParaPerfil[resposta];
-    if (perfil) contagem[perfil]++;
-  }
-
-  let perfilFinal = "Iniciante";
-  let maxContagem = 0;
-  for (const perfil in contagem) {
-    if (contagem[perfil] > maxContagem) {
-      maxContagem = contagem[perfil];
-      perfilFinal = perfil;
+    if (!respostas || !Array.isArray(respostas) || respostas.length === 0) {
+        return new Response(
+            JSON.stringify({
+                error: 'O campo "respostas" é obrigatório e deve ser um array de strings.',
+            }),
+            { status: 400, headers: { "Content-Type": "application/json" } }
+        );
     }
-  }
 
-  const diagnosticoFinal = diagnosticos[perfilFinal];
+    // REMOVI as declarações duplicadas daqui.
 
-  return new Response(
-    JSON.stringify({
-      diagnosticoFinal: diagnosticoFinal.letra,
-      perfil: diagnosticoFinal.titulo,
-      detalhesContagem: contagem,
-    }),
-    { headers: { "Content-Type": "application/json" } }
-  );
+    const contagem = { "Iniciante": 0, "Em Crescimento": 0, "Consolidado": 0, "Visionário": 0 };
+
+    for (const resposta of respostas) {
+        const perfil = respostasParaPerfil[resposta];
+        if (perfil) contagem[perfil]++;
+    }
+
+    let perfilFinal = "Iniciante";
+    let maxContagem = 0;
+    for (const perfil in contagem) {
+        if (contagem[perfil] > maxContagem) {
+            maxContagem = contagem[perfil];
+            perfilFinal = perfil;
+        }
+    }
+
+    const diagnosticoFinal = diagnosticos[perfilFinal];
+
+    return new Response(
+        JSON.stringify({
+            diagnosticoFinal: diagnosticoFinal.letra,
+            perfil: diagnosticoFinal.titulo,
+            detalhesContagem: contagem,
+        }),
+        { headers: { "Content-Type": "application/json" } }
+    );
 };
-
