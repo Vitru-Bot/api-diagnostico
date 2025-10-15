@@ -70,3 +70,5 @@ app.post('/diagnostico', async (c) => {
 });
 
 export const onRequest = app.fetch;
+
+//teste
