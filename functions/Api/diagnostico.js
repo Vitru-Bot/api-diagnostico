@@ -36,37 +36,53 @@ const diagnosticos = {
     "Visionário": { letra: "D", titulo: "Visionário – O Fantasma da Ilusão" }
 };
 
-app.post('/diagnostico', async (c) => {
-    const { respostas } = await c.req.json();
+export default async function (c) {
+  const { respostas } = await c.req.json();
 
-    if (!respostas || !Array.isArray(respostas) || respostas.length === 0) {
-        return c.json({ error: 'O campo "respostas" é obrigatório e deve ser um array de strings.' }, 400);
+  if (!respostas || !Array.isArray(respostas) || respostas.length === 0) {
+    return c.json(
+      { error: 'O campo "respostas" é obrigatório e deve ser um array de strings.' },
+      400
+    );
+  }
+
+  const respostasParaPerfil = {
+    // adicione seu mapeamento aqui, ex:
+    // "Sim": "Iniciante",
+    // "Não": "Visionário",
+  };
+
+  const diagnosticos = {
+    "Iniciante": { letra: "A", titulo: "Iniciante" },
+    "Em Crescimento": { letra: "B", titulo: "Em Crescimento" },
+    "Consolidado": { letra: "C", titulo: "Consolidado" },
+    "Visionário": { letra: "D", titulo: "Visionário" },
+  };
+
+  const contagem = { "Iniciante": 0, "Em Crescimento": 0, "Consolidado": 0, "Visionário": 0 };
+
+  for (const resposta of respostas) {
+    const perfil = respostasParaPerfil[resposta];
+    if (perfil) {
+      contagem[perfil]++;
     }
+  }
 
-    const contagem = { "Iniciante": 0, "Em Crescimento": 0, "Consolidado": 0, "Visionário": 0 };
-    for (const resposta of respostas) {
-        const perfil = respostasParaPerfil[resposta];
-        if (perfil) {
-            contagem[perfil]++;
-        }
+  let perfilFinal = "Iniciante";
+  let maxContagem = 0;
+  for (const perfil in contagem) {
+    if (contagem[perfil] > maxContagem) {
+      maxContagem = contagem[perfil];
+      perfilFinal = perfil;
     }
+  }
 
-    let perfilFinal = "Iniciante";
-    let maxContagem = 0;
-    for (const perfil in contagem) {
-        if (contagem[perfil] > maxContagem) {
-            maxContagem = contagem[perfil];
-            perfilFinal = perfil;
-        }
-    }
+  const diagnosticoFinal = diagnosticos[perfilFinal];
 
-    const diagnosticoFinal = diagnosticos[perfilFinal];
+  return c.json({
+    diagnosticoFinal: diagnosticoFinal.letra,
+    perfil: diagnosticoFinal.titulo,
+    detalhesContagem: contagem,
+  });
+}
 
-    return c.json({
-        diagnosticoFinal: diagnosticoFinal.letra,
-        perfil: diagnosticoFinal.titulo,
-        detalhesContagem: contagem
-    });
-});
-
-export const onRequest = app.handle;
