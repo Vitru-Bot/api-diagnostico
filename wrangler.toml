@@ -1,0 +1,4 @@
+name = "api-diagnostico"
+main = "functions/index.js" # ou o caminho do seu arquivo principal
+compatibility_flags = ["nodejs_compat"]
+compatibility_date = "2025-10-15"

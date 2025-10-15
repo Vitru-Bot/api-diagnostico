@@ -1,17 +1,12 @@
 // functions/api/[[path]].js
 
-import express from 'express';
-import serverless from 'serverless-http';
+import { Hono } from 'hono';
 
-// Crie uma instância do Express
-const app = express();
+// Cria uma instância do Hono
+const app = new Hono();
 
-// Middleware para permitir que o Express leia JSON do corpo da requisição
-app.use(express.json());
-
-// --- BASE DE CONHECIMENTO ---
+// --- BASE DE CONHECIMENTO (A mesma de antes) ---
 const respostasParaPerfil = {
-    // ... (cole aqui todo o seu objeto respostasParaPerfil)
     "O medo de dar errado antes mesmo de começar": "Iniciante",
     "Ainda é tudo na base do improviso e da intuição": "Iniciante",
     "Vou apagando incêndios na hora": "Iniciante",
@@ -35,7 +30,6 @@ const respostasParaPerfil = {
 };
 
 const diagnosticos = {
-    // ... (cole aqui todo o seu objeto diagnosticos)
     "Iniciante": { letra: "A", titulo: "Iniciante: O Fantasma do Medo" },
     "Em Crescimento": { letra: "B", titulo: "Em Crescimento: O Fantasma da Confusão" },
     "Consolidado": { letra: "C", titulo: "Consolidado – O Fantasma da Estagnação" },
@@ -43,13 +37,16 @@ const diagnosticos = {
 };
 // --- FIM DA BASE DE CONHECIMENTO ---
 
-// Crie um router do Express
-const router = express.Router();
+// Cria a rota POST para /api/diagnostico
+// O Hono usa um objeto de contexto 'c'
+app.post('/api/diagnostico', async (c) => {
+    // Pega o corpo da requisição (JSON) de forma assíncrona
+    const { respostas } = await c.req.json();
 
-router.post('/diagnostico', (req, res) => {
-    const { respostas } = req.body;
+    // Validação
     if (!respostas || !Array.isArray(respostas) || respostas.length === 0) {
-        return res.status(400).json({ error: 'O campo "respostas" é obrigatório e deve ser um array de strings.' });
+        // Retorna um JSON de erro
+        return c.json({ error: 'O campo "respostas" é obrigatório e deve ser um array de strings.' }, 400);
     }
 
     const contagem = { "Iniciante": 0, "Em Crescimento": 0, "Consolidado": 0, "Visionário": 0 };
@@ -70,17 +67,14 @@ router.post('/diagnostico', (req, res) => {
     }
 
     const diagnosticoFinal = diagnosticos[perfilFinal];
-    res.status(200).json({
+
+    // Retorna o JSON de sucesso
+    return c.json({
         diagnosticoFinal: diagnosticoFinal.letra,
         perfil: diagnosticoFinal.titulo,
         detalhesContagem: contagem
     });
 });
 
-// Monte o router no caminho base /api
-app.use('/api', router);
-
-// Exporte o handler para a Cloudflare
-export const onRequest = serverless(app);
-
-//teste
+// Exporta o manipulador do Hono para a Cloudflare (muito mais simples!)
+export const onRequest = app.fetch;
