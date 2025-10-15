@@ -1,10 +1,3 @@
-// functions/api/[[path]].js
-
-import { Hono } from 'hono';
-
-// Cria uma instância do Hono
-const app = new Hono();
-
 // --- BASE DE CONHECIMENTO (A mesma de antes) ---
 const respostasParaPerfil = {
     "O medo de dar errado antes mesmo de começar": "Iniciante",
@@ -36,20 +29,21 @@ const diagnosticos = {
     "Visionário": { letra: "D", titulo: "Visionário – O Fantasma da Ilusão" }
 };
 
-export default async function (c) {
-  const { respostas } = await c.req.json();
+export const onRequestPost = async ({ request }) => {
+  const { respostas } = await request.json();
 
   if (!respostas || !Array.isArray(respostas) || respostas.length === 0) {
-    return c.json(
-      { error: 'O campo "respostas" é obrigatório e deve ser um array de strings.' },
-      400
+    return new Response(
+      JSON.stringify({
+        error: 'O campo "respostas" é obrigatório e deve ser um array de strings.',
+      }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 
   const respostasParaPerfil = {
-    // adicione seu mapeamento aqui, ex:
-    // "Sim": "Iniciante",
-    // "Não": "Visionário",
+    "Sim": "Iniciante",
+    "Não": "Visionário",
   };
 
   const diagnosticos = {
@@ -63,9 +57,7 @@ export default async function (c) {
 
   for (const resposta of respostas) {
     const perfil = respostasParaPerfil[resposta];
-    if (perfil) {
-      contagem[perfil]++;
-    }
+    if (perfil) contagem[perfil]++;
   }
 
   let perfilFinal = "Iniciante";
@@ -79,10 +71,13 @@ export default async function (c) {
 
   const diagnosticoFinal = diagnosticos[perfilFinal];
 
-  return c.json({
-    diagnosticoFinal: diagnosticoFinal.letra,
-    perfil: diagnosticoFinal.titulo,
-    detalhesContagem: contagem,
-  });
-}
+  return new Response(
+    JSON.stringify({
+      diagnosticoFinal: diagnosticoFinal.letra,
+      perfil: diagnosticoFinal.titulo,
+      detalhesContagem: contagem,
+    }),
+    { headers: { "Content-Type": "application/json" } }
+  );
+};
 
