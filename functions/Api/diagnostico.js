@@ -42,13 +42,22 @@ export const onRequestPost = async ({ request }) => {
         );
     }
 
-    // REMOVI as declarações duplicadas daqui.
-
     const contagem = { "Iniciante": 0, "Em Crescimento": 0, "Consolidado": 0, "Visionário": 0 };
 
     for (const resposta of respostas) {
         const perfil = respostasParaPerfil[resposta];
         if (perfil) contagem[perfil]++;
+    }
+
+    const totalDeRespostasValidas = Object.values(contagem).reduce((acc, val) => acc + val, 0);
+
+    if (totalDeRespostasValidas === 0) {
+        return new Response(
+            JSON.stringify({
+                error: 'Nenhuma resposta válida foi encontrada na requisição.',
+            }),
+            { status: 400, headers: { "Content-Type": "application/json" } }
+        );
     }
 
     let perfilFinal = "Iniciante";
