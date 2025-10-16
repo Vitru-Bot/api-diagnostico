@@ -1,4 +1,3 @@
-// --- BASE DE CONHECIMENTO (Use esta que está fora da função) ---
 const respostasParaPerfil = {
     "O medo de dar errado antes mesmo de começar": "Iniciante",
     "Ainda é tudo na base do improviso e da intuição": "Iniciante",
@@ -29,42 +28,45 @@ const diagnosticos = {
     "Visionário": { letra: "D", titulo: "Visionário – O Fantasma da Ilusão" }
 };
 
-// A função onRequestPost lida apenas com requisições do tipo POST
 export const onRequestPost = async ({ request }) => {
     const { respostas } = await request.json();
 
     if (!respostas || !Array.isArray(respostas) || respostas.length === 0) {
         return new Response(
-            JSON.stringify({
-                error: 'O campo "respostas" é obrigatório e deve ser um array de strings.',
-            }),
+            JSON.stringify({ error: 'O campo "respostas" é obrigatório e deve ser um array de strings.' }),
             { status: 400, headers: { "Content-Type": "application/json" } }
         );
     }
 
     const contagem = { "Iniciante": 0, "Em Crescimento": 0, "Consolidado": 0, "Visionário": 0 };
-
     for (const resposta of respostas) {
         const perfil = respostasParaPerfil[resposta];
         if (perfil) contagem[perfil]++;
     }
 
     const totalDeRespostasValidas = Object.values(contagem).reduce((acc, val) => acc + val, 0);
-
     if (totalDeRespostasValidas === 0) {
         return new Response(
-            JSON.stringify({
-                error: 'Nenhuma resposta válida foi encontrada na requisição.',
-            }),
+            JSON.stringify({ error: 'Nenhuma resposta válida foi encontrada na requisição.' }),
             { status: 400, headers: { "Content-Type": "application/json" } }
         );
     }
 
-    let perfilFinal = "Iniciante";
-    let maxContagem = 0;
-    for (const perfil in contagem) {
-        if (contagem[perfil] > maxContagem) {
-            maxContagem = contagem[perfil];
+    const pontuacaoGrupoA = contagem.Iniciante + contagem["Em Crescimento"];
+    const pontuacaoGrupoB = contagem.Consolidado + contagem.Visionário;
+
+    const grupoVencedor = (pontuacaoGrupoB > pontuacaoGrupoA)
+        ? ["Consolidado", "Visionário"]
+        : (pontuacaoGrupoA > pontuacaoGrupoB)
+            ? ["Iniciante", "Em Crescimento"]
+            : ["Consolidado", "Visionário"];
+
+    let perfilFinal = grupoVencedor[0];
+    let maxContagemNoGrupo = -1;
+
+    for (const perfil of grupoVencedor) {
+        if (contagem[perfil] >= maxContagemNoGrupo) {
+            maxContagemNoGrupo = contagem[perfil];
             perfilFinal = perfil;
         }
     }
