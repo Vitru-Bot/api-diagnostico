@@ -6,7 +6,7 @@ const respostasParaPerfil = {
     "Entender como o negócio pode dar certo": "Iniciante",
     "A confusão de ter muita demanda e pouca organização": "Em Crescimento",
     "Já tenho algum controle, mas ainda me enrolo com fluxo de caixa": "Em Crescimento",
-    "Corro atrás de processos para organizar, mas sinto que não dou conta": "Em Crescimento",
+    "Tento organizar, mas sinto que não dou conta": "Em Crescimento",
     "Tenho clientes, mas ainda dependo de indicação ou redes sociais básicas": "Em Crescimento",
     "Organizar processos e equipes para crescer sem perder o controle": "Em Crescimento",
     "A estagnação de fazer mais do mesmo sem enxergar futuro": "Consolidado",
@@ -16,7 +16,7 @@ const respostasParaPerfil = {
     "Evitar ficar na zona de conforto e manter o ritmo": "Consolidado",
     "A ilusão de ter mil ideias mas sem saber como colocar em prática": "Visionário",
     "Uso finanças como ferramenta estratégica para apostar em projetos": "Visionário",
-    "Já penso em como transformar o problema em uma oportunidade de inovação": "Visionário",
+    "Penso em transformar o problema em uma oportunidade": "Visionário",
     "Busco expandir para outros mercados e criar experiências únicas": "Visionário",
     "Transformar ideias ousadas em realidade sem se perder no caminho": "Visionário"
 };
